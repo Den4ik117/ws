@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>WS test</title>
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 1170px;
+            padding: 0 15px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .chat {
+            margin: 1rem 0;
+            height: calc(100vh - 2rem);
+            overflow: hidden;
+            display: grid;
+            gap: 1rem;
+            grid-template-rows: 1fr min-content;
+        }
+
+        .chat .chat__messages {
+            height: 100%;
+            border: 1px solid #ccc;
+            border-radius: 1rem;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            overflow: auto;
+        }
+
+        .chat .chat__form {
+            display: grid;
+            grid-template-columns: 1fr min-content;
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <div class="container">
+        <div class="chat">
+            <div class="chat__messages"></div>
+            <form class="chat__form">
+                <input class="chat__input" type="text" placeholder="Введите ваше сообщение...">
+                <button type="submit">Отправить</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const protocol = window.location.protocol.includes('https') ? 'wss' : 'ws';
+        const ws = new WebSocket(`${protocol}://${location.host}`);
+        const chatMessages = document.querySelector('.chat__messages');
+        const chatForm = document.querySelector('.chat__form');
+        const chatInput = document.querySelector('.chat__input');
+
+        ws.onmessage = function (e) {
+            const data = JSON.parse(e.data);
+
+            const message = document.createElement('div');
+            message.classList.add('chat__message');
+            message.textContent = data.message;
+
+            chatMessages.append(message);
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        };
+
+        chatForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const message = {
+                event: 'message',
+                id: Date.now(),
+                message: chatInput.value
+            };
+
+            ws.send(JSON.stringify(message));
+            chatInput.value = '';
+        });
+    })();
+</script>
+</body>
+</html>
