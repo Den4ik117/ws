@@ -1,5 +1,5 @@
-import { createConnection } from 'mysql2';
-import dotenv from 'dotenv';
+const { createConnection } = require('mysql2');
+const dotenv = require('dotenv');
 
 dotenv.config();
 
@@ -10,6 +10,6 @@ const connection = createConnection({
     password: process.env.DB_PASSWORD,
 });
 
-export {
+module.exports = {
     connection,
 };

@@ -1,4 +1,4 @@
-import { connection } from '../database/connect.js';
+const { connection } = require('../database/connect.js');
 
 connection.query(
     `CREATE TABLE messages (
